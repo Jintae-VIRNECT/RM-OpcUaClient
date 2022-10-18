@@ -1,0 +1,15 @@
+## Server Configuration
+server:
+  port: 8100
+
+spring:
+  profiles:
+    active: ${VIRNECT_ENV}
+  application:
+    name: opcUa-Client
+  cloud:
+    config:
+      uri: ${CONFIG_SERVER}
+      profile: ${VIRNECT_ENV}
+      name: ${spring.application.name}
+#      enabled: false

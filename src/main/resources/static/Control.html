@@ -1,0 +1,145 @@
+<html>
+<head>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=0.6">
+    <meta charset="utf-8">
+    <title>Opc Ua test Control</title>
+
+
+    <style>
+        #result {
+            font-size: 10pt;
+            padding: 40pt;
+            border: solid 1px black;
+        }
+
+        .normal_button {
+            margin: 10px
+        }
+
+        .footer {
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+    <script src='https://code.jquery.com/jquery-3.4.1.min.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script>
+
+        // const sockJS = new SockJS("/opcua");
+
+        var ws = new WebSocket('ws://localhost:8100/opcua');
+        const stomp = Stomp.over(ws);
+
+        function onError(e) {
+            console.log("STOMP ERROR", e);
+        }
+
+        function onDebug(m) {
+            console.log("STOMP DEBUG", m);
+        }
+
+        stomp.debug = onDebug;
+
+
+        stomp.connect('guest', 'guest', function (frame) {
+
+            console.log('STOMP Connected');
+
+            stomp.send('/app/opcua.remote.enter', {}, {
+                "test": "test"
+            })
+
+            /* subscribe 설정에 따라 rabbit의 Exchange, Queue가 상당히 많이 바뀜 */
+            stomp.subscribe(`/exchange/amq.fanout/opcua.queue`, function (content) {
+                // stomp.subscribe(`/topic/opcua.remote.data`, function (content) {
+
+                const payload = JSON.parse(content.body);
+
+                const result = document.getElementById("result")
+
+                const contents = JSON.stringify(payload.contents)
+
+                const html = `<div class="payload">${contents}</div>`
+
+                result.insertAdjacentHTML('beforeend', html);
+
+            }, {'auto-delete': true, 'durable': false, 'exclusive': false});
+
+        }, onError, '/');
+
+        $(function () {
+
+
+            $("#startButton").on("click", function () {
+
+                // const enterMessage = {
+                //     "service": "opcua",
+                //     "workspaceId": "aNgtFNEVMCOwG",
+                //     "event": "opcuaConenction",
+                //     ""
+                // }
+
+                stomp.send('/app/opcua.remote.enter2', {}, {
+                    "service": "opcua"
+                })
+                // $.ajax({
+                //     url: "http://localhost:8100/start",
+                //     type: "GET",
+                //     crossDomain: true,
+                //     dataType: "json",
+                //     success: function (result) {
+                //         alert(result)
+                //     },
+                //     error: function (xhr, error) {
+                //
+                //         console.log(error);
+                //
+                //     }
+                // });
+            });
+        });
+
+        $(function () {
+            $("#stopButton").on("click", function () {
+                $.ajax({
+                    url: "http://localhost:8100/stop",
+                    type: "GET",
+                    crossDomain: true,
+                    dataType: "json",
+                    success: function (result) {
+                        alert(result)
+                    },
+                    error: function (xhr, error) {
+
+                        console.log(error);
+
+                    }
+                });
+            });
+        });
+
+
+    </script>
+</head>
+<body>
+<div>
+    <p>Opc Ua data</p>
+
+    <div id="result">
+        <div class="name"></div>
+
+
+    </div>
+
+    <div class="footer">
+        <p>1.</p>
+        <button id="startButton" class="normal_button"> start</button>
+        <br><br>
+        <p>2.</p>
+        <button id="stopButton" class="normal_button"> stop</button>
+    </div>
+
+</div>
+</body>
+</html>
