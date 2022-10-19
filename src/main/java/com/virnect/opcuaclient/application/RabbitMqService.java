@@ -43,7 +43,6 @@ public class RabbitMqService {
 		), containerFactory = "rabbitListenerContainerFactory")
 	public void getOpcUaData(PushResponse pushResponse) {
 		log.debug("getOpcUaData {}", pushResponse);
-		System.out.println("pushResponse fanout= " + pushResponse);
 	}
 
 	@RabbitListener(

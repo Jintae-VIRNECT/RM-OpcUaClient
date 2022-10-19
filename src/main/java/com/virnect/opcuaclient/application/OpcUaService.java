@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscription;
+import org.eclipse.milo.opcua.sdk.client.subscriptions.ManagedSubscription;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -59,13 +60,21 @@ public class OpcUaService {
 		SubscriptionEventListener subscriptionListener = new SubscriptionEventListener();
 		client.getSubscriptionManager().addSubscriptionListener(subscriptionListener);
 
+		try {
+			ManagedSubscription subscription = ManagedSubscription.create(client, 250.0);
+
+			subscription.addChangeListener((new ChangeListener()));
+		} catch (Exception e) {
+			System.out.println("e = " + e);
+		}
+
 		client.getSubscriptionManager()
 			.createSubscription(1000)
 			.thenApply(this::subscribeTo);
 
 	}
 
-	private CompletableFuture<UaMonitoredItem> subscribeTo(
+	private CompletableFuture<Object> subscribeTo(
 		UaSubscription subscription
 	) {
 		// 태그 정보
@@ -83,8 +92,8 @@ public class OpcUaService {
 			item.setValueConsumer(this::onSubscriptionValue);
 		};
 
-		UaSubscription.ItemCreationCallback onItemCreated = //
-			(monitoredItem, id) -> monitoredItem.setValueConsumer(consumer);
+		UaSubscription.ItemCreationCallback onItemCreated = (monitoredItem, id) -> monitoredItem.setValueConsumer(
+			consumer);
 
 		return subscription
 			.createMonitoredItems(
@@ -92,7 +101,7 @@ public class OpcUaService {
 				requests,
 				onItemCreated
 			)
-			.thenApply(result -> result.get(0));
+			.thenApply(result -> this.getResult(result));
 	}
 
 	private MonitoredItemCreateRequest getMonitoredItemCreateRequest(NodeId nodeId) {
@@ -108,9 +117,9 @@ public class OpcUaService {
 	}
 
 	private void onSubscriptionValue(UaMonitoredItem uaMonitoredItem, DataValue dataValue) {
-		log.info("subscription value received: item={}, value={}",
-			uaMonitoredItem.getReadValueId().getNodeId(), dataValue.getValue()
-		);
+		// log.info("subscription value received: item={}, value={}",
+		// 	uaMonitoredItem.getReadValueId().getNodeId(), dataValue.getValue()
+		// );
 
 		Map<Object, Object> contents = new HashMap<>();
 
@@ -127,6 +136,23 @@ public class OpcUaService {
 			.contents(contents)
 			.build();
 
-		rabbitMqService.fanoutSender(pushResponse);
+		// rabbitMqService.fanoutSender(pushResponse);
+	}
+
+	private UaMonitoredItem getResult(List<UaMonitoredItem> result) {
+
+		return result.get(0);
+
+	}
+
+	private void publishRabbitMq(UaMonitoredItem monitoredItem, int id) {
+
+		System.out.println(
+			"monitoredItem.getMonitoredItemId().toString() = " + monitoredItem.getMonitoredItemId().toString());
+		System.out.println("monitoredItem.getMonitoredItemId().toString() = " + monitoredItem.getReadValueId()
+			.getNodeId()
+			.getIdentifier()
+			.toString());
+
 	}
 }

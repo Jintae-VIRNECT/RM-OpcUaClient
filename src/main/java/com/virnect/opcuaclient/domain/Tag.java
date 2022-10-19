@@ -42,13 +42,16 @@ public class Tag {
 
 	@NotBlank
 	@Column(unique = true)
-	private String nodeId;
+	private String identifier;
+
+	private String identifierType;
 
 	@Builder
-	public Tag(Long id, String name, int namespace, String nodeId) {
+	public Tag(Long id, String name, int namespace, String identifier, String identifierType) {
 		this.id = id;
 		this.name = name;
 		this.namespace = namespace;
-		this.nodeId = nodeId;
+		this.identifier = identifier;
+		this.identifierType = identifierType;
 	}
 }

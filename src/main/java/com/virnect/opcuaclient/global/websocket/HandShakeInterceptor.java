@@ -28,7 +28,7 @@ public class HandShakeInterceptor implements HandshakeInterceptor {
 		ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
 		Map<String, Object> attributes
 	) throws Exception {
-		log.info("[WEBSOCKET_HANDSHAKE][BEFORE] HEADER : {}", request.getHeaders());
+		log.debug("[WEBSOCKET_HANDSHAKE][BEFORE] HEADER : {}", request.getHeaders());
 		return true;
 	}
 
@@ -36,7 +36,7 @@ public class HandShakeInterceptor implements HandshakeInterceptor {
 	public void afterHandshake(
 		ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Exception exception
 	) {
-		log.info("[WEBSOCKET_HANDSHAKE][AFTER] HEADER : {}", request.getHeaders());
+		log.debug("[WEBSOCKET_HANDSHAKE][AFTER] HEADER : {}", request.getHeaders());
 
 	}
 }

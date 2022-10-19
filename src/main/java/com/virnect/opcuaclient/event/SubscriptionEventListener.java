@@ -1,5 +1,8 @@
 package com.virnect.opcuaclient.event;
 
+import java.util.stream.Collectors;
+
+import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscription;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscriptionManager;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -27,7 +30,12 @@ public class SubscriptionEventListener implements UaSubscriptionManager.Subscrip
 		UaSubscription subscription,
 		DateTime publishTime
 	) {
-		log.info("onKeepAlive event", subscription.toString());
+		log.info(
+			"onKeepAlive event,{}",
+			subscription.getMonitoredItems().stream().map(UaMonitoredItem::getStatusCode).collect(
+				Collectors.toList())
+		);
+
 	}
 
 	@Override

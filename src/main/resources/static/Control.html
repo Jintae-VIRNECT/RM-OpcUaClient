@@ -45,10 +45,15 @@
         stomp.connect('guest', 'guest', function (frame) {
 
             console.log('STOMP Connected');
-
-            stomp.send('/app/opcua.remote.enter', {}, {
-                "test": "test"
-            })
+            // const enterMessage = {
+            //     "service": "opcua",
+            //     "workspaceId": "aNgtFNEVMCOwG",
+            //     "event": "opcuaConenction",
+            // }
+            //
+            // stomp.send('/app/opcua.remote.enter', {}, {
+            //     "test": enterMessage
+            // })
 
             /* subscribe 설정에 따라 rabbit의 Exchange, Queue가 상당히 많이 바뀜 */
             stomp.subscribe(`/exchange/amq.fanout/opcua.queue`, function (content) {
@@ -62,7 +67,7 @@
 
                 const html = `<div class="payload">${contents}</div>`
 
-                result.insertAdjacentHTML('beforeend', html);
+                result.innerHTML = html;
 
             }, {'auto-delete': true, 'durable': false, 'exclusive': false});
 
@@ -73,16 +78,16 @@
 
             $("#startButton").on("click", function () {
 
-                // const enterMessage = {
-                //     "service": "opcua",
-                //     "workspaceId": "aNgtFNEVMCOwG",
-                //     "event": "opcuaConenction",
-                //     ""
-                // }
+                const enterMessage = {
+                    "service": "opcua",
+                    "workspaceId": "aNgtFNEVMCOwG",
+                    "event": "opcuaConenction",
+                    "status": "enter"
+                }
 
-                stomp.send('/app/opcua.remote.enter2', {}, {
-                    "service": "opcua"
-                })
+                stomp.send('/app/opcua.remote.enter', {},
+                    JSON.stringify(enterMessage)
+                )
                 // $.ajax({
                 //     url: "http://localhost:8100/start",
                 //     type: "GET",

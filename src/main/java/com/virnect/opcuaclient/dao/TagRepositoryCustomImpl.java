@@ -36,7 +36,8 @@ public class TagRepositoryCustomImpl implements TagRepositoryCustom {
 		List<TagResponseDto> fetch = queryFactory
 			.select(Projections.constructor(
 				TagResponseDto.class,
-				tag.nodeId,
+				tag.identifier,
+				tag.identifierType,
 				tag.namespace
 			)).from(tag)
 			.fetch();

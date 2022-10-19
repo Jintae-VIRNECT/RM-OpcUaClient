@@ -21,19 +21,23 @@ import lombok.Data;
 @Data
 public class TagResponseDto {
 
-	private String NodeId;
+	private String identifier;
+	private String identifierType;
 	private int namespace;
 
 	@Builder
 	@QueryProjection
-	public TagResponseDto(String nodeId, int namespace) {
-		NodeId = nodeId;
+	public TagResponseDto(String identifier, String identifierType, int namespace) {
+		this.identifier = identifier;
+		this.identifierType = identifierType;
 		this.namespace = namespace;
 	}
 
 	public static NodeId createNodId(TagResponseDto tag) {
-		// NodeId nodeId = new NodeId(tag.getNamespace(), tag.getNodeId());
-		NodeId nodeId = new NodeId(2, 2133458483);
+
+		NodeId nodeId = tag.getIdentifierType().equals("String") ?
+			new NodeId(tag.getNamespace(), tag.getIdentifier()) :
+			new NodeId(tag.getNamespace(), Integer.parseInt(tag.getIdentifier()));
 
 		return nodeId;
 	}

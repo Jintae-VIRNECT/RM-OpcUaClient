@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.opcuaclient.application.OpcUaService;
+import com.virnect.opcuaclient.dto.response.PushSendRequest;
 import com.virnect.opcuaclient.global.common.ApiResponse;
 import com.virnect.opcuaclient.global.common.opcua.connection.OpcUaClientConnectionPool;
 
@@ -62,7 +62,11 @@ public class OpcUaController {
 	}
 
 	@MessageMapping("opcua.remote.enter")
-	public void enter(@Payload String str) {
-		log.info("들어왔는가?", str);
+	public void enter(PushSendRequest pushRequest) {
+		log.info("들어왔는가? {}", pushRequest.getEvent());
+
+		if ("enter".equals(pushRequest.getStatus())) {
+			opcUaService.startSubscription();
+		}
 	}
 }
