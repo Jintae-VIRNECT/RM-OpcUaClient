@@ -35,12 +35,23 @@ public class OpcUaController {
 	private final OpcUaService opcUaService;
 	private final OpcUaClientConnectionPool opcUaClientConnectionPool;
 
+	// @CrossOrigin("*")
+	// @ApiOperation(value = "OPC-UA-Subscription 시작", notes = "opc-ua 서버에서 node Id들로 구독 실행.")
+	// @GetMapping("/start")
+	// public ResponseEntity<ApiResponse<String>> start() {
+	//
+	// 	opcUaService.startSubscription();
+	//
+	// 	return ResponseEntity.ok(new ApiResponse<>("ok"));
+	//
+	// }
+
 	@CrossOrigin("*")
 	@ApiOperation(value = "OPC-UA-Subscription 시작", notes = "opc-ua 서버에서 node Id들로 구독 실행.")
 	@GetMapping("/start")
-	public ResponseEntity<ApiResponse<String>> start() {
+	public ResponseEntity<ApiResponse<String>> start2() {
 
-		opcUaService.startSubscription();
+		opcUaService.startManagementSubscription();
 
 		return ResponseEntity.ok(new ApiResponse<>("ok"));
 
@@ -66,7 +77,7 @@ public class OpcUaController {
 		log.info("들어왔는가? {}", pushRequest.getEvent());
 
 		if ("enter".equals(pushRequest.getStatus())) {
-			opcUaService.startSubscription();
+			// opcUaService.startSubscription();
 		}
 	}
 }

@@ -66,7 +66,6 @@ public class OpcUaClientConnectionPool implements InitializingBean {
 		usedConnection = new LinkedBlockingDeque<>(initialPoolSize);
 
 		for (int i = 0; i < initialPoolSize; i++) {
-			System.out.println("i = " + i);
 			connectionPool.add(Optional.of(createConnection()));
 		}
 
@@ -80,7 +79,7 @@ public class OpcUaClientConnectionPool implements InitializingBean {
 		if (Objects.requireNonNull(connection).isPresent()) {
 
 			OpcUaClient client = connection.get();
-			
+
 			try {
 				client.connect().get();
 			} catch (Exception e) {

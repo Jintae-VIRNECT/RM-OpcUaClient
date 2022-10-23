@@ -43,7 +43,11 @@ public class SubscriptionEventListener implements UaSubscriptionManager.Subscrip
 		UaSubscription subscription,
 		StatusCode status
 	) {
-		log.info("onStatusChanged event for {}, status = {}", subscription.toString(), status.toString());
+		log.info(
+			"onStatusChanged event for {}, status = {}",
+			subscription.getMonitoredItems().get(0).getReadValueId().getNodeId().getIdentifier().toString(),
+			status.toString()
+		);
 	}
 
 	@Override

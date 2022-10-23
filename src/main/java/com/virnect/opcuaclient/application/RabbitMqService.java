@@ -55,6 +55,7 @@ public class RabbitMqService {
 			key = ROUTING_KEY
 		), containerFactory = "rabbitListenerContainerFactory")
 	public void getOpcUaDataTopic() {
+
 		System.out.println("enter opc ua= ");
 	}
 	// public void topicSender(PushResponse pushResponse) {
